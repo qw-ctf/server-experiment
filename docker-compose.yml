@@ -1,0 +1,40 @@
+services:
+  mvdsv:
+    image: mvdsv
+    build:
+      context: server
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/server/mvdsv.cfg:/quake/qw/mvdsv.cfg:ro
+      - ${PWD}/server/ktx.cfg:/quake/qw/ktx.cfg:ro
+      - ${PWD}/server/server.cfg:/quake/qw/server.cfg:ro
+    ports:
+      - "127.0.0.1:27500:27500/udp"
+
+  quake1:
+    image: fteqw
+    build: &client-build
+      context: fte
+      dockerfile: Dockerfile
+    links: &client-link
+      - mvdsv:server
+    environment:
+      NAME: "red1"
+      TEAM: "red"
+    
+  quake2:
+    image: fteqw
+    build: *client-build
+    links: *client-link
+    environment:
+      NAME: "red2"
+      TEAM: "red"
+    
+  quake3:
+    image: fteqw
+    build: *client-build
+    links: *client-link
+    environment:
+      NAME: "blue1"
+      TEAM: "blue"
+    
